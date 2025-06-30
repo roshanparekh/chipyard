@@ -23,6 +23,8 @@ int main(void) {
   }
   size_t write_end = rdcycle();
 
+  printf("Adderess of dest %p\n", (void*)dest);
+  
   printf("Wrote %ld bytes in %ld cycles\n", sizeof(src), write_end - write_start);
 
   size_t read_start = rdcycle();

@@ -144,6 +144,7 @@ class MultiSimLLCChipletRocketConfig extends Config(
 )
 
 class CTCRocketConfig extends Config(
+  new testchipip.soc.WithChipIdPin ++                               // Add pin to identify chips  
   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
   new testchipip.soc.WithOffchipBusClient(SBUS,
     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
@@ -160,3 +161,68 @@ class MultiCTCRocketConfig extends Config(
   new chipyard.harness.WithMultiChip(0, new CTCRocketConfig) ++
   new chipyard.harness.WithMultiChip(1, new CTCRocketConfig)
 )
+
+// class CTCSaturnConfig extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(
+//     onchipAddr = 0x100000000L,
+//     offchipAddr = 0x0L,                               
+//     size = (1L << 32) - 1, 
+//     managerBus = Some(OBUS))) ++                      // use OBUS for address translation unit
+//   new testchipip.soc.WithOffchipBusClient(SBUS,       // obus provides path to other chip's memory
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),  // The lower 4GB is mapped to this chip
+//     replicationBase = Some(1L << 32)                  // The upper 4GB goes off-chip
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ 
+//   new chipyard.DSPV256D128ShuttleConfig
+// )
+
+// class MultiCTCSaturnConfig extends Config(
+//   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
+//   new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1) ++
+//   new chipyard.harness.WithMultiChip(0, new CTCSaturnConfig) ++
+//   new chipyard.harness.WithMultiChip(1, new CTCSaturnConfig)
+// )
+
+
+// class CTCSaturnConfig extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(
+//     onchipAddr = 0x100000000L,
+//     offchipAddr = 0x0L,                               
+//     size = (1L << 32) - 1, 
+//     managerBus = Some(OBUS))) ++                      // use OBUS for address translation unit
+//   new testchipip.soc.WithOffchipBusClient(SBUS,       // obus provides path to other chip's memory
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),  // The lower 4GB is mapped to this chip
+//     replicationBase = Some(1L << 32)                  // The upper 4GB goes off-chip
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ 
+//   new chipyard.DSPV256D128ShuttleConfig
+// )
+
+// class CTCSaturnConfig extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(
+//     onchipAddr = 0x100000000L,
+//     offchipAddr = 0x0L,                               
+//     size = (1L << 32) - 1, 
+//     managerBus = Some(OBUS))) ++                      // use OBUS for address translation unit
+//   new testchipip.soc.WithOffchipBusClient(SBUS,       // obus provides path to other chip's memory
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),  // The lower 4GB is mapped to this chip
+//     replicationBase = Some(1L << 32)                  // The upper 4GB goes off-chip
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ 
+//   new chipyard.DSPV256D128ShuttleConfig
+// )
+
+// class MultiCTCSaturnConfig extends Config(
+//   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
+//   new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1) ++
+//   new chipyard.harness.WithMultiChip(0, new CTCSaturnConfig) ++
+//   new chipyard.harness.WithMultiChip(1, new CTCSaturnConfig)
+// )
+
+
