@@ -108,13 +108,13 @@ int main(void) {
     if (chipID == 1) {
         // loop until internal count is equal to chip0 count
         // or chip0 is still doing work
-        //printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
+        printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
 
         int temp = chip1_count;
         int temp1 = chip0_count;
         
         while ((temp != temp1) || (chip0_fin_status == 0)) {
-            //            printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
+            printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
             if (temp1 != temp) {
                 printf("[TEST - ChipID: %ld] Doing linear transformation at layer 2...\n", chipID);
                 for (int i = 0; i < NUM_OUTPUTS; i++) {
@@ -124,7 +124,7 @@ int main(void) {
                 // increment chip 1 counter
                 chip1_count++;
             }
-            //            printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
+            printf("chip 1 in while. c0: %d, c1: %d, chip0_fin_status: %d\n", chip0_count, chip1_count, chip0_fin_status);
             
             //            temp = chip1_count;
             // temp1 = chip0_count;
