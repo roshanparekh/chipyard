@@ -88,6 +88,8 @@ add_executable(symmetric symmetric.c)
 add_executable(ctc-test ctc-test.c)
 add_executable(ctc-test-nn ctc-test-nn.c)
 add_executable(ctc-test-simple ctc-test-simple.c)
+add_executable(onechip-test-nn onechip-test-nn.c)
+add_executable(ctc-test-nchip ctc-test-nchip.c)
 
 #################################
 # Disassembly
@@ -129,6 +131,8 @@ add_dump_target(symmetric)
 add_dump_target(ctc-test)
 add_dump_target(ctc-test-nn)
 add_dump_target(ctc-test-simple)
+add_dump_target(onechip-test-nn)
+add_dump_target(ctc-test-nchip)
 
 # Add custom command to generate spiflash.img from spiflash.py
 add_custom_command(

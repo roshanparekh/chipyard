@@ -143,36 +143,102 @@ class MultiSimLLCChipletRocketConfig extends Config(
   new chipyard.harness.WithMultiChip(1, new LLCChipletConfig)
 )
 
-class CTCRocketConfig1 extends Config(
-  new testchipip.soc.WithChipIdPin ++                               // Add pin to identify chips  
-  new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
-  new testchipip.soc.WithOffchipBusClient(SBUS,
-    blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
-    replicationBase = Some(1L << 32) 
-  ) ++
-  new testchipip.soc.WithOffchipBus ++
-  new chipyard.iobinders.WithCTCPunchthrough ++ // Adding here to not destroy the abstract config, this should be IOCells tho
-  new RocketConfig
-)
-
-class CTCRocketConfig2 extends Config(
-  new testchipip.soc.WithChipIdPin ++
-  new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
-  new testchipip.soc.WithOffchipBusClient(SBUS,
-    blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
-    replicationBase = Some(1L << 32) 
-  ) ++
-  new testchipip.soc.WithOffchipBus ++
+// Testing N-Chip CTC
+class CTCRocketConfig extends Config(
+  new testchipip.soc.WithChipIdPin(
+    new testchipip.soc.ChipIdPinParams(width=2)) ++  // Add pin to identify chips  
+  new testchipip.ctc.WithCTC(Seq(
+    new testchipip.ctc.CTCParams(
+      onchipAddr = 0x100000000L,
+      offchipAddr = 0x0L,                               
+      size = (1L << 32) - 1, 
+      managerBus = Some(SBUS)),
+    new testchipip.ctc.CTCParams(
+      onchipAddr = 0x200000000L,
+      offchipAddr = 0x0L,                               
+      size = (1L << 32) - 1, 
+      managerBus = Some(SBUS)),
+  )) ++
   new chipyard.iobinders.WithCTCPunchthrough ++ // Adding here to not destroy the abstract config, this should be IOCells tho
   new RocketConfig
 )
 
 class MultiCTCRocketConfig extends Config(
   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
-  new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1) ++
-  new chipyard.harness.WithMultiChip(0, new CTCRocketConfig1) ++
-  new chipyard.harness.WithMultiChip(1, new CTCRocketConfig2)
+  new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1, chip0portId=0, chip1portId=0) ++
+  new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=2, chip0portId=1, chip1portId=0) ++
+  new chipyard.harness.WithMultiChipCTC(chip0=1, chip1=2, chip0portId=1, chip1portId=1) ++
+  new chipyard.harness.WithMultiChip(0, new CTCRocketConfig) ++
+  new chipyard.harness.WithMultiChip(1, new CTCRocketConfig) ++
+  new chipyard.harness.WithMultiChip(2, new CTCRocketConfig)
 )
+
+
+// class CTCRocketConfig1 extends Config(
+//   new testchipip.soc.WithChipIdPin ++                               // Add pin to identify chips  
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
+//   new testchipip.soc.WithOffchipBusClient(SBUS,
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
+//     replicationBase = Some(1L << 32) 
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ // Adding here to not destroy the abstract config, this should be IOCells tho
+//   new RocketConfig
+// )
+
+// class CTCRocketConfig2 extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
+//   new testchipip.soc.WithOffchipBusClient(SBUS,
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
+//     replicationBase = Some(1L << 32) 
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ // Adding here to not destroy the abstract config, this should be IOCells tho
+//   new RocketConfig
+// )
+
+// class CTCRocketConfigSingle extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new RocketConfig
+// )
+
+// class MultiCTCRocketConfig extends Config(
+//   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
+//   new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1) ++
+//   new chipyard.harness.WithMultiChip(0, new CTCRocketConfig1) ++
+//   new chipyard.harness.WithMultiChip(1, new CTCRocketConfig2)
+// )
+
+// class CTCSaturnConfig extends Config(
+//   new testchipip.soc.WithChipIdPin ++                               // Add pin to identify chips  
+//   new testchipip.ctc.WithCTC(new testchipip.ctc.CTCParams(address = 0x0L, size = 1L << 32, managerBus = Some(OBUS))) ++ // use OBUS for addr translation becuz i dont want to write a new chiptop
+//   new testchipip.soc.WithOffchipBusClient(SBUS,
+//     blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
+//     replicationBase = Some(1L << 32) 
+//   ) ++
+//   new testchipip.soc.WithOffchipBus ++
+//   new chipyard.iobinders.WithCTCPunchthrough ++ // Adding here to not destroy the abstract config, this should be IOCells tho
+//   new chipyard.REFV256D64ShuttleConfig
+//  //new chipyard.REFV128D128RocketConfig
+//  //new chipyard.MINV256D64RocketConfig
+//  //new chipyard.DSPV256D128ShuttleConfig
+// )
+
+// class CTCSaturnConfigSingle extends Config(
+//   new testchipip.soc.WithChipIdPin ++
+//   new chipyard.REFV256D64ShuttleConfig
+// //  new chipyard.MINV256D64RocketConfig
+// //  new chipyard.REFV128D128RocketConfig
+// //  new chipyard.DSPV256D128ShuttleConfig
+// )
+
+// class MultiCTCSaturnConfig extends Config(
+//   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
+//   new chipyard.harness.WithMultiChipCTC(chip0=0, chip1=1) ++
+//   new chipyard.harness.WithMultiChip(0, new CTCSaturnConfig) ++
+//   new chipyard.harness.WithMultiChip(1, new CTCSaturnConfig)
+// )
 
 // class CTCSaturnConfig extends Config(
 //   new testchipip.soc.WithChipIdPin ++
@@ -187,7 +253,7 @@ class MultiCTCRocketConfig extends Config(
 //   ) ++
 //   new testchipip.soc.WithOffchipBus ++
 //   new chipyard.iobinders.WithCTCPunchthrough ++ 
-//   new chipyard.DSPV256D128ShuttleConfig
+//   
 // )
 
 // class MultiCTCSaturnConfig extends Config(

@@ -579,13 +579,74 @@ class WithOffchipBusSel extends OverrideIOBinder({
   }
 })
 
+
+// Single CTC Port version
+// class WithCTCPunchthrough extends OverrideIOBinder({
+//   (system: CanHavePeripheryCTC) => {
+//     val ports = system.ctc_io.map { p =>
+//       val port = IO(chiselTypeOf(p.getWrappedValue)) // Since CTC IO varies depending on params
+//       port <> p.getWrappedValue
+//       CTCPort(() => port)
+//     }
+//     (ports.toSeq, Nil)
+//   }
+// })
+
+
+// Multi-port CTC Version
 class WithCTCPunchthrough extends OverrideIOBinder({
   (system: CanHavePeripheryCTC) => {
-    val ports = system.ctc_io.map { p =>
-      val port = IO(chiselTypeOf(p.getWrappedValue)) // Since CTC IO varies depending on params
-      port <> p.getWrappedValue
-      CTCPort(() => port)
-    }
-    (ports.toSeq, Nil)
+    val (ports, cells) = system.ctc_io.zipWithIndex.map({ case (p, id) =>
+      val port = IO(chiselTypeOf(p.get.getWrappedValue)).suggestName(s"ctc_port_$id") // CTC IO varies depending on params
+      port <> p.get.getWrappedValue
+      (CTCPort(() => port, id), Nil)
+    }).unzip
+    (ports.toSeq, cells.flatten.toSeq)
   }
 })
+
+// // TODO need to finish; this is where the port gets made
+// // ChipletConfig says the punchthrough should be IOCell
+// class WithCTCIOCells extends OverrideIOBinder({
+//   (system: CanHavePeripheryTLSerial) => {
+//     val (ports, cells) = system.serial_tls.zipWithIndex.map({ case (s, id) =>
+//       val sys = system.asInstanceOf[BaseSubsystem]
+//       val (port, cells) = IOCell.generateIOFromSignal(s.getWrappedValue, s"serial_tl_$id", sys.p(IOCellKey), abstractResetAsAsync = true)
+//       (SerialTLPort(() => port, sys.p(SerialTLKey)(id), system.serdessers(id), id), cells)
+//     }).unzip
+//     (ports.toSeq, cells.flatten.toSeq)
+//   }
+// })
+
+// SERIAL TL BELOW -- USE AS REFERENCE
+// class WithSerialTLIOCells extends OverrideIOBinder({
+//   (system: CanHavePeripheryTLSerial) => {
+//     val (ports, cells) = system.serial_tls.zipWithIndex.map({ case (s, id) =>
+//       val sys = system.asInstanceOf[BaseSubsystem]
+//       val (port, cells) = IOCell.generateIOFromSignal(s.getWrappedValue, s"serial_tl_$id", sys.p(IOCellKey), abstractResetAsAsync = true)
+//       (SerialTLPort(() => port, sys.p(SerialTLKey)(id), system.serdessers(id), id), cells)
+//     }).unzip
+//     (ports.toSeq, cells.flatten.toSeq)
+//   }
+// })
+
+// class WithChipIdIOCells extends OverrideIOBinder({
+//   (system: CanHavePeripheryChipIdPin) => system.chip_id_pin.map({ p =>
+//     val sys = system.asInstanceOf[BaseSubsystem]
+//     val (port, cells) = IOCell.generateIOFromSignal(p.getWrappedValue, s"chip_id", sys.p(IOCellKey), abstractResetAsAsync = true)
+//     (Seq(ChipIdPort(() => port)), cells)
+//   }).getOrElse(Nil, Nil)
+// })
+
+// class WithSerialTLPunchthrough extends OverrideIOBinder({
+//   (system: CanHavePeripheryTLSerial) => {
+//     val (ports, cells) = system.serial_tls.zipWithIndex.map({ case (s, id) =>
+//       val sys = system.asInstanceOf[BaseSubsystem]
+//       val port = IO(chiselTypeOf(s.getWrappedValue))
+//       port <> s.getWrappedValue
+//       (SerialTLPort(() => port, sys.p(SerialTLKey)(id), system.serdessers(id), id), Nil)
+//     }).unzip
+//     (ports.toSeq, cells.flatten.toSeq)
+//   }
+// })
+// SERIAL TL ABOVE -- USE AS REFERENCE
