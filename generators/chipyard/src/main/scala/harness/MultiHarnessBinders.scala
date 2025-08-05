@@ -12,7 +12,7 @@ import freechips.rocketchip.util._
 import testchipip.serdes._
 
 import chipyard._
-import chipyard.iobinders.{GetSystemParameters, JTAGChipIO, HasChipyardPorts, Port, SerialTLPort}
+import chipyard.iobinders.{GetSystemParameters, JTAGChipIO, HasChipyardPorts, Port, SerialTLPort, UciephyTestPort}
 
 import scala.reflect.{ClassTag}
 
@@ -75,6 +75,46 @@ class WithMultiChipSerialTL(chip0: Int, chip1: Int, chip0portId: Int = 0, chip1p
       case (io0: DecoupledInternalSyncPhitIO, io1: DecoupledExternalSyncPhitIO) => connectDecoupledSyncPhitIO(io0, io1)
       case (io0: DecoupledExternalSyncPhitIO, io1: DecoupledInternalSyncPhitIO) => connectDecoupledSyncPhitIO(io1, io0)
       case (io0: CreditedSourceSyncPhitIO   , io1: CreditedSourceSyncPhitIO   ) => connectSourceSyncPhitIO   (io0, io1)
+    }
+  }
+)
+
+
+class WithMultiChipUciephyTest(chip0: Int, chip1: Int) extends MultiHarnessBinder(
+  chip0, chip1,
+  (p0: UciephyTestPort) => true,
+  (p1: UciephyTestPort) => true,
+  (th: HasHarnessInstantiators, p0: UciephyTestPort, p1: UciephyTestPort) => {
+    (p0.io, p1.io) match {
+      case(io0: uciephytest.UciephyTestTLIO, io1: uciephytest.UciephyTestTLIO) => {
+        io0.common.phy.refClkP      := th.harnessBinderClock.asBool
+        io0.common.phy.refClkN      := (!th.harnessBinderClock.asBool)
+        io0.common.phy.bypassClkP   := th.harnessBinderClock.asBool
+        io0.common.phy.bypassClkN   := (!th.harnessBinderClock.asBool)
+        io0.common.phy.pllRdacVref  := true.B
+
+        io1.common.phy.refClkP      := th.harnessBinderClock.asBool
+        io1.common.phy.refClkN      := (!th.harnessBinderClock.asBool)
+        io1.common.phy.bypassClkP   := th.harnessBinderClock.asBool
+        io1.common.phy.bypassClkN   := (!th.harnessBinderClock.asBool)
+        io1.common.phy.pllRdacVref  := true.B
+        
+        io0.phy.rxClkP    := io1.phy.txClkP
+        io0.phy.rxClkN    := io1.phy.txClkN
+        io0.phy.rxValid   := io1.phy.txValid
+        io0.phy.rxTrack   := io1.phy.txTrack
+        io0.phy.rxData    := io1.phy.txData
+        io0.phy.sbRxClk   := io1.phy.sbTxClk
+        io0.phy.sbRxData  := io1.phy.sbTxData
+
+        io1.phy.rxClkP    := io0.phy.txClkP
+        io1.phy.rxClkN    := io0.phy.txClkN
+        io1.phy.rxValid   := io0.phy.txValid
+        io1.phy.rxTrack   := io0.phy.txTrack
+        io1.phy.rxData    := io0.phy.txData
+        io1.phy.sbRxClk   := io0.phy.sbTxClk
+        io1.phy.sbRxData  := io0.phy.sbTxData
+      }
     }
   }
 )

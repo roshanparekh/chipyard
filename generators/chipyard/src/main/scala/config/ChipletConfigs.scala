@@ -5,6 +5,18 @@ import freechips.rocketchip.diplomacy.{AddressSet}
 import freechips.rocketchip.subsystem.{SBUS}
 import testchipip.soc.{OBUS}
 
+// 
+import freechips.rocketchip.diplomacy._
+import org.chipsalliance.cde.config.{Field, Parameters, Config}
+import freechips.rocketchip.tilelink._
+import freechips.rocketchip.util._
+import freechips.rocketchip.prci._
+import edu.berkeley.cs.ucie.digital.tilelink._
+import edu.berkeley.cs.ucie.digital.interfaces.{FdiParams, RdiParams, AfeParams, MainbandIo, SidebandIo}
+import edu.berkeley.cs.ucie.digital.protocol.{ProtocolLayerParams}
+import edu.berkeley.cs.ucie.digital.sideband.{SidebandParams}
+import edu.berkeley.cs.ucie.digital.logphy.{LinkTrainingParams, TransmitPattern, RegisterRWIO, RegisterRW}
+
 // ------------------------------------------------
 // Configs demonstrating chip-to-chip communication
 // ------------------------------------------------

@@ -115,3 +115,5 @@ case class GCDBusyPort     (val getIO: () => Bool)
 case class OffchipSelPort  (val getIO: () => UInt)
     extends Port[UInt]
 
+case class UciephyTestPort    (val getIO: () => uciephytest.UciephyTestTLIO)
+    extends Port[uciephytest.UciephyTestTLIO]

@@ -607,3 +607,14 @@ class WithOffchipBusSel extends OverrideIOBinder({
     }.getOrElse(Nil, Nil)
   }
 })
+
+class WithUCIePunchthrough extends OverrideIOBinder({
+  (system: uciephytest.CanHavePeripheryUciephyTest) => {
+    val ports = system.top_io.map { p =>
+      val port = IO(chiselTypeOf(p.getWrappedValue))
+      port <> p.getWrappedValue
+      UciephyTestPort(() => port)
+    }
+    (ports.toSeq, Nil)
+  }
+})

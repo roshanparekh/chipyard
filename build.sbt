@@ -158,7 +158,7 @@ lazy val chipyard = (project in file("generators/chipyard"))
     dsptools, rocket_dsp_utils,
     radiance, gemmini, icenet, tracegen, cva6, nvdla, sodor, ibex, fft_generator,
     constellation, mempress, barf, shuttle, caliptra_aes, rerocc,
-    compressacc, saturn, ara, firrtl2_bridge, vexiiriscv, tacit)
+    compressacc, saturn, ara, firrtl2_bridge, vexiiriscv, tacit, uciedigital, uciephytest, tlt)
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(
     libraryDependencies ++= Seq(
@@ -424,3 +424,38 @@ lazy val firechip = (project in file("generators/firechip/chip"))
     Test / testOptions += Tests.Argument("-oF")
   )
   .settings(scalaTestSettings)
+
+lazy val uciedigital = freshProject("uciedigital",  file("generators/uciedigital"))
+  .settings(
+    Test / scalaSource := baseDirectory.value / "test" / "scala",
+    Test / fork := true,
+    Test / testGrouping := (Test / testGrouping).value.flatMap { group =>
+      group.tests.map { test =>
+          Group(test.name, Seq(test), SubProcess(ForkOptions()))
+      }
+    }
+  )
+  .dependsOn(rocketchip, testchipip, tlt)
+  .settings(chiselSettings)
+  .settings(commonSettings)
+  .settings(libraryDependencies ++= Seq(
+        "edu.berkeley.cs" %% "chiseltest" % chiselTestVersion,
+  ))
+  // .settings(
+  //   libraryDependencies ++= Seq(
+  //     "com.lihaoyi" %% "sourcecode" % "0.3.1"
+  //   )
+  // )
+
+lazy val uciephytest = (project in file("generators/uciephytest"))
+  .dependsOn(rocketchip, uciedigital, testchipip)
+  .settings(chiselSettings)
+  .settings(commonSettings)
+  .settings(libraryDependencies ++= Seq(
+        "edu.berkeley.cs" %% "chiseltest" % chiselTestVersion,
+  ))
+
+lazy val tlt = (project in file("tools/tilelink-tester"))
+  .dependsOn(rocketchip)
+  .settings(libraryDependencies ++= rocketLibDeps.value)
+  .settings(commonSettings)

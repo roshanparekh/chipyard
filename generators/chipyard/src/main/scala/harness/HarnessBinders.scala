@@ -341,3 +341,21 @@ class WithOffchipBusSelPlusArg extends HarnessBinder({
   }
 })
 
+class WithUciephyTestLoopback extends HarnessBinder({
+  case (th: HasHarnessInstantiators, port: UciephyTestPort, chipId: Int) => {
+    port.io.common.phy.refClkP := th.harnessBinderClock.asBool
+    port.io.common.phy.refClkN := (!th.harnessBinderClock.asBool)
+    //port.io.sbClk := th.harnessBinderClock
+    port.io.common.phy.bypassClkP := th.harnessBinderClock.asBool
+    port.io.common.phy.bypassClkN := (!th.harnessBinderClock.asBool)
+    port.io.common.phy.pllRdacVref := false.B
+    //port.io.testPllRdacVref := true.B
+    port.io.phy.rxClkP := port.io.phy.txClkP
+    port.io.phy.rxClkN := port.io.phy.txClkN
+    port.io.phy.rxValid := port.io.phy.txValid
+    port.io.phy.rxTrack := port.io.phy.txTrack
+    port.io.phy.rxData := port.io.phy.txData
+    port.io.phy.sbRxClk := port.io.phy.sbTxClk
+    port.io.phy.sbRxData := port.io.phy.sbTxData
+  }
+})
