@@ -168,7 +168,7 @@
 	url = git@github.com:ucb-ucie/uciedigital.git
 [submodule "generators/uciephytest"]
 	path = generators/uciephytest
-	url = git@github.com:rohanku/uciephytest.git
+	url = https://github.com/ucb-bar/uciephytest.git
 [submodule "tools/tilelink-tester"]
 	path = tools/tilelink-tester
-	url = git@github.com:schwarz-em/tilelink-tester.git
+	url = https://github.com/schwarz-em/tilelink-tester.git

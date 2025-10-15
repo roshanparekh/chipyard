@@ -30,8 +30,8 @@ class UCIePhyRocketConfig extends Config (
 
   new uciephytest.WithUciephyTest(Seq(uciephytest.UciephyTestParams(address=0x20000,
                                                                 numLanes = 16,
-                                                                tlParams = TileLinkParams(address = 0x100000000L,
-                                                                addressRange = (1L << 32) - 1,
+                                                                tlParams = TileLinkParams(address = 0x580000000L,
+                                                                addressRange = (1L << 17) - 1,
                                                                 configAddress = 0x8000,
                                                                 inwardQueueDepth = 2,
                                                                 outwardQueueDepth = 2,
@@ -39,27 +39,28 @@ class UCIePhyRocketConfig extends Config (
                                                                 onchipAddr = Some(0x1000000000L),
                                                                 sim = true))) ++
 
-  new testchipip.soc.WithOffchipBusClient(SBUS,
-    blockRange = Seq(AddressSet(0, (1L << 32) - 1)),
-    replicationBase = Some(1L << 32) 
-  ) ++
-  new testchipip.soc.WithOffchipBus ++                                                
+  new testchipip.soc.WithScratchpad(base=0x580000000L,
+                                    size=(1L << 17)) ++ // 128KB
+                                    
+  new chipyard.config.WithSystemBusWidth(256)++
   new chipyard.iobinders.WithUCIePunchthrough ++
-  new freechips.rocketchip.rocket.WithNHugeCores(1) ++
-  new chipyard.config.AbstractConfig
+  new RocketConfig
 )
 
 /*
 make CONFIG=UciephyTestLoopbackConfig -j16
+make CONFIG=UciephyTestLoopbackConfig BINARY=../../tests/build/ucie-random.riscv LOADMEM=1 -j6 run-binary
 */
 class UciephyTestLoopbackConfig extends Config (
-  // new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
+  new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
   new chipyard.harness.WithUciephyTestLoopback ++
   new UCIePhyRocketConfig
 )
 
 /*
 make CONFIG=MultiUciephyTestConfig -j16
+
+srun --pty make CONFIG=MultiUciephyTestConfig BINARY=../../tests/build/ucie-basic.riscv LOADMEM=1 -j6 run-binary-debug
 */
 class MultiUciephyTestConfig extends Config (
   new chipyard.harness.WithAbsoluteFreqHarnessClockInstantiator ++
